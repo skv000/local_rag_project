@@ -1,5 +1,9 @@
 # from local_rag_project.llm.ollama_client import ask_llm
-from local_rag_project.llm.ollama_client import chat_with_llm
+# from local_rag_project.llm.ollama_client import chat_with_llm
+from local_rag_project.llm.ollama_client import (
+    stream_chat,
+    SYSTEM_PROMPT,
+)
 
 def main():
     print("="*50)
@@ -15,24 +19,39 @@ def main():
             print("\nGoodbye")
             break
 
-        messages.append(
+        # messages.append(
+        #     {
+        #         "role": "user",
+        #         "content": question,
+        #     }
+        # )
+
+        # answer = stream_chat(messages=messages)
+
+        # messages.append(
+        #     {
+        #     "role": "assistant",
+        #     "content": answer,
+        #     }
+        # )
+
+        messages = [
+            {
+                "role": "system",
+                "content": SYSTEM_PROMPT,
+            },
             {
                 "role": "user",
                 "content": question,
             }
-        )
-
-        answer = chat_with_llm(messages=messages)
-
-        messages.append(
-            {
-            "role": "assistant",
-            "content": answer,
-            }
-        )
+        ]
 
         print("\nAI : ")
-        print(answer)
+        # print(answer)
+        for chunk in stream_chat(messages=messages):
+            print(chunk,flush=True, end="")
+
+        print()
 
 
 if  __name__=="__main__":
