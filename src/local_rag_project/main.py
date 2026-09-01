@@ -10,7 +10,12 @@ def main():
     print("Local RAG Project")
     print("="*50)
 
-    messages = []
+    messages = [
+        {
+            "role": "system",
+            "content": SYSTEM_PROMPT,
+        }
+    ]
 
     while True:
         question = input("\nYOU : ")
@@ -19,39 +24,37 @@ def main():
             print("\nGoodbye")
             break
 
-        # messages.append(
-        #     {
-        #         "role": "user",
-        #         "content": question,
-        #     }
-        # )
-
-        # answer = stream_chat(messages=messages)
-
-        # messages.append(
-        #     {
-        #     "role": "assistant",
-        #     "content": answer,
-        #     }
-        # )
-
-        messages = [
-            {
-                "role": "system",
-                "content": SYSTEM_PROMPT,
-            },
+        messages.append(
             {
                 "role": "user",
                 "content": question,
             }
-        ]
+        )
+
 
         print("\nAI : ")
-        # print(answer)
+
+        answer_parts = []
+
+        # answer = stream_chat(messages=messages)
+
+        
         for chunk in stream_chat(messages=messages):
             print(chunk,flush=True, end="")
+            answer_parts.append(chunk)
 
         print()
+
+        answer = "".join(answer_parts)
+
+        messages.append(
+            {
+            "role": "assistant",
+            "content": answer,
+            }
+        )
+
+
 
 
 if  __name__=="__main__":
