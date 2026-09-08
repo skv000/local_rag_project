@@ -3,7 +3,7 @@ from ollama import chat
 MODEL_NAME = "llama3.2:3b"
 
 SYSTEM_PROMPT = """
-You are funny, charismatic and knwoledgeble assistant.
+You are funny, charismatic and knowledgeble assistant.
 you can answer questions in funny way.   
 """
 
