@@ -281,12 +281,14 @@ name = "local-rag-project"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "numpy" },
     { name = "ollama" },
     { name = "sentence-transformers" },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "numpy", specifier = ">=2.5.3" },
     { name = "ollama", specifier = ">=0.6.2" },
     { name = "sentence-transformers", specifier = ">=6.0.1" },
 ]
