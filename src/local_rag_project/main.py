@@ -3,6 +3,7 @@ from local_rag_project.documents.chunker import chunk_text
 from local_rag_project.retrieval.retriever import Retriever
 from local_rag_project.rag.context_builder  import build_context
 from local_rag_project.rag.prompt_builder import build_rag_prompt
+from local_rag_project.routing.router import is_rag_question
 from local_rag_project.llm.ollama_client import (
     SYSTEM_PROMPT,
     stream_chat,
@@ -51,34 +52,47 @@ def main():
             print("\nAI : GoodBye, See you later!")
             break
 
-        # Retrieve relevant chunks
+        use_rag = is_rag_question(question)
 
-        results = retriever.search(
-            query=question,
-            top_k=2,
-        )
+        if use_rag:
 
-        # Build context
+            results = retriever.search(
+                query=question,
+                top_k=2,
+            )
 
-        context = build_context(
-            results=results
-        )
+            context = build_context(
+                results=results
+            )
 
-        # Build RAG prompt
+            rag_prompt = build_rag_prompt(
+                question=question,
+                context=context,
+            )
 
-        rag_prompt = build_rag_prompt(
-            question=question,
-            context=context,
-        )
+            messages.append(
+                {
+                    "role": "user",
+                    "content": question,
+                }
+            )
 
-        # Add RAG prompt to conversation
+            rag_messages = messages[:-1] + [
+                {
+                    "role": "user",
+                    "content": rag_prompt,
+                }
+            ]
 
-        messages.append(
-            {
-                "role": "user",
-                "content": rag_prompt,
-            }
-        )
+        else:
+            messages.append(
+                {
+                    "role": "user",
+                    "content": question,
+                }
+            )
+
+            rag_messages = messages
 
         # Generate Response
 
@@ -87,7 +101,7 @@ def main():
         answer_parts = []
 
         for chunk in stream_chat(
-            messages=messages
+            messages=rag_messages
         ):
             print(
                 chunk,
