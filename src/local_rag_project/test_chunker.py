@@ -1,5 +1,8 @@
 from local_rag_project.documents.loader import load_text_file
-from local_rag_project.documents.chunker import chunk_text
+from local_rag_project.documents.chunker import (
+    chunk_text,
+    split_paragraphs,
+)
 
 
 def main():
@@ -9,8 +12,10 @@ def main():
     print("=" * 50)
 
     document = load_text_file(
-        "data/documents/hindu_philosophy.txt"
+        "data/documents/rag_test_document.txt"
     )
+
+    paragraphs = split_paragraphs(document)
 
     chunks = chunk_text(
         document,
@@ -23,6 +28,10 @@ def main():
     )
 
     print(
+        f"Number of paragraphs: {len(paragraphs)}"
+    )
+
+    print(
         f"Number of chunks: {len(chunks)}"
     )
 
@@ -30,10 +39,16 @@ def main():
         chunks,
         start=1,
     ):
+
         print("\n" + "-" * 50)
-        print(f"Chunk index : {index}")
+        print(f"Chunk {index}")
         print("-" * 50)
+
         print(chunk)
+
+        print(
+            f"\nCharacters: {len(chunk)}"
+        )
 
 
 if __name__ == "__main__":

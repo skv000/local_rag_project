@@ -1,9 +1,28 @@
 import re
 
 
+def split_paragraphs(text: str) -> list[str]:
+    """
+    Split a document into paragraphs.
+
+    Paragraphs are separated by one or more blank lines.
+    """
+
+    paragraphs = re.split(
+        r"\n\s*\n",
+        text.strip(),
+    )
+
+    return [
+        paragraph.strip()
+        for paragraph in paragraphs
+        if paragraph.strip()
+    ]
+
+
 def split_sentences(text: str) -> list[str]:
     """
-    Split text into sentences while preserving sentence content.
+    Split text into sentences.
     """
 
     sentences = re.split(
@@ -31,7 +50,7 @@ def chunk_text(
 
     if chunk_overlap < 0:
         raise ValueError(
-            "chunk_overlap can not be negative."
+            "chunk_overlap cannot be negative."
         )
 
     if chunk_overlap >= chunk_size:
@@ -39,60 +58,64 @@ def chunk_text(
             "chunk_overlap must be smaller than chunk_size."
         )
 
-    sentences = split_sentences(text)
+    paragraphs = split_paragraphs(text)
 
     chunks = []
-    current_chunk = []
-
+    current_sentences = []
     current_length = 0
 
-    for sentence in sentences:
+    for paragraph in paragraphs:
 
-        sentence_length = len(sentence)
+        sentences = split_sentences(paragraph)
 
-        # If adding this sentence would exceed the chunk size,
-        # save the current chunk.
-        if (
-            current_chunk
-            and current_length + sentence_length > chunk_size
-        ):
-            chunks.append(
-                " ".join(current_chunk).strip()
-            )
+        for sentence in sentences:
 
-            # Keep sentences from the end of the previous chunk
-            # to provide overlap.
-            overlap_sentences = []
-            overlap_length = 0
+            sentence_length = len(sentence)
 
-            for previous_sentence in reversed(current_chunk):
-
-                if (
-                    overlap_length + len(previous_sentence)
-                    > chunk_overlap
-                ):
-                    break
-
-                overlap_sentences.insert(
-                    0,
-                    previous_sentence,
+            if (
+                current_sentences
+                and current_length + sentence_length > chunk_size
+            ):
+                chunks.append(
+                    " ".join(current_sentences).strip()
                 )
 
-                overlap_length += len(previous_sentence)
+                # Build sentence-based overlap.
+                overlap_sentences = []
+                overlap_length = 0
 
-            current_chunk = overlap_sentences
-            current_length = sum(
-                len(sentence)
-                for sentence in current_chunk
-            )
+                for previous_sentence in reversed(
+                    current_sentences
+                ):
+                    if (
+                        overlap_length
+                        + len(previous_sentence)
+                        > chunk_overlap
+                    ):
+                        break
 
-        current_chunk.append(sentence)
-        current_length += sentence_length
+                    overlap_sentences.insert(
+                        0,
+                        previous_sentence,
+                    )
 
-    # Add final chunk.
-    if current_chunk:
+                    overlap_length += len(
+                        previous_sentence
+                    )
+
+                current_sentences = overlap_sentences
+
+                current_length = sum(
+                    len(sentence)
+                    for sentence in current_sentences
+                )
+
+            current_sentences.append(sentence)
+            current_length += sentence_length
+
+    if current_sentences:
         chunks.append(
-            " ".join(current_chunk).strip()
+            " ".join(current_sentences).strip()
         )
 
     return chunks
