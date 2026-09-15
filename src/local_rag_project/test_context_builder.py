@@ -3,8 +3,8 @@ from local_rag_project.documents.chunker import chunk_text
 from local_rag_project.retrieval.retriever import Retriever
 from local_rag_project.rag.context_builder import build_context
 
-def main():
 
+def main():
     print("=" * 50)
     print("Context Builder Test")
     print("=" * 50)
@@ -14,31 +14,38 @@ def main():
     )
 
     chunks = chunk_text(
-        document,
+        text=document,
         chunk_size=200,
         chunk_overlap=30,
+        source="hindu_philosophy.txt",
     )
 
-    retriever = Retriever(chunks=chunks)
+    print(f"Number of chunks: {len(chunks)}")
 
-    query = "What does advaita vedanta teach?"
+    retriever = Retriever(
+        chunks=chunks
+    )
+
+    query = "what does advaita vedanta teach?"
+
+    print("\n" + "=" * 50)
+    print(f"Query: {query}")
+    print("=" * 50)
 
     results = retriever.search(
         query=query,
         top_k=2,
     )
 
-    context = build_context(results=results)
+    context = build_context(
+        results=results
+    )
 
     print("\n" + "=" * 50)
-    print("QUERY")
-    print("=" * 50)
-    print(query)
-
-    print("\n" + "=" * 50)
-    print("RETRIEVED CONTEXT")
+    print("RAG CONTEXT")
     print("=" * 50)
     print(context)
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     main()

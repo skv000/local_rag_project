@@ -1,4 +1,6 @@
+from local_rag_project.documents.models import Chunk
 import re
+
 
 
 def split_paragraphs(text: str) -> list[str]:
@@ -41,7 +43,8 @@ def chunk_text(
     text: str,
     chunk_size: int = 500,
     chunk_overlap: int = 50,
-) -> list[str]:
+    source: str = "unknown",
+) -> list[Chunk]:
 
     if chunk_size <= 0:
         raise ValueError(
@@ -77,7 +80,11 @@ def chunk_text(
                 and current_length + sentence_length > chunk_size
             ):
                 chunks.append(
-                    " ".join(current_sentences).strip()
+                    Chunk(
+                        text=" ".join(current_sentences).strip(),
+                        chunk_id=len(chunks),
+                        source=source,
+                    )
                 )
 
                 # Build sentence-based overlap.
@@ -115,7 +122,11 @@ def chunk_text(
 
     if current_sentences:
         chunks.append(
-            " ".join(current_sentences).strip()
+            Chunk(
+                text=" ".join(current_sentences).strip(),
+                chunk_id=len(chunks),
+                source=source,
+            )
         )
 
     return chunks

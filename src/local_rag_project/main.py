@@ -27,6 +27,7 @@ def main():
         text=document,
         chunk_size=200,
         chunk_overlap=30,
+        source="hindu_philosophy.txt",
     )
 
     print(f"Loaded document with {len(chunks)} chunks.")

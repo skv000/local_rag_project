@@ -2,6 +2,7 @@ from local_rag_project.documents.loader import load_text_file
 from local_rag_project.documents.chunker import chunk_text
 from local_rag_project.retrieval.retriever import Retriever
 
+
 def main():
     print("=" * 50)
     print("Retriever Test")
@@ -15,11 +16,14 @@ def main():
         text=document,
         chunk_size=200,
         chunk_overlap=30,
+        source="hindu_philosophy.txt",
     )
 
     print(f"Number of chunks: {len(chunks)}")
 
-    retriever = Retriever(chunks=chunks)
+    retriever = Retriever(
+        chunks=chunks
+    )
 
     query = "what advaita vedanta teach?"
 
@@ -33,14 +37,17 @@ def main():
     )
 
     for index, (chunk, score) in enumerate(
-        results, start=1
+        results,
+        start=1,
     ):
         print("\n" + "=" * 50)
-        print(f"Results: {index}")
+        print(f"Result: {index}")
+        print(f"Chunk ID: {chunk.chunk_id}")
+        print(f"Source: {chunk.source}")
         print(f"Similarity: {score:.5f}")
         print("-" * 50)
-        print(chunk)
+        print(chunk.text)
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     main()

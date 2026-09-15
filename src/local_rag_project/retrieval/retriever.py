@@ -1,21 +1,24 @@
+from local_rag_project.documents.models import Chunk
 from local_rag_project.embeddings.embedder import Embedder
 from local_rag_project.retrieval.similarity import cosine_similarity
 
 
 class Retriever:
-    def __init__(self, chunks: list[str]):
+    def __init__(self, chunks: list[Chunk]):
         self.chunks = chunks
         self.embedder = Embedder()
 
         print("Creating chunk embeddings...")
 
-        self.embeddings = self.embedder.embed_texts(chunks)
+        self.embeddings = self.embedder.embed_texts(
+            [chunk.text for chunk in chunks]
+        )
 
     def search(
         self,
         query: str,
         top_k: int = 3,
-    ) -> list[tuple[str, float]]:
+    ) -> list[tuple[Chunk, float]]:
 
         query_embedding = self.embedder.embed_text(query)
 
@@ -30,7 +33,9 @@ class Retriever:
                 embedding,
             )
 
-            results.append((chunk, score))
+            results.append(
+                (chunk, score)
+            )
 
         results.sort(
             key=lambda item: item[1],

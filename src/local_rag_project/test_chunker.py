@@ -18,9 +18,10 @@ def main():
     paragraphs = split_paragraphs(document)
 
     chunks = chunk_text(
-        document,
+        text=document,
         chunk_size=500,
-        chunk_overlap=50,
+        chunk_overlap=30,
+        source="rag_test_document.txt",
     )
 
     print(
@@ -35,20 +36,13 @@ def main():
         f"Number of chunks: {len(chunks)}"
     )
 
-    for index, chunk in enumerate(
-        chunks,
-        start=1,
-    ):
-
+    for chunk in chunks:
         print("\n" + "-" * 50)
-        print(f"Chunk {index}")
+        print(f"Chunk ID: {chunk.chunk_id}")
+        print(f"Source: {chunk.source}")
         print("-" * 50)
-
-        print(chunk)
-
-        print(
-            f"\nCharacters: {len(chunk)}"
-        )
+        print(chunk.text)
+        print(f"Characters: {len(chunk.text)}")
 
 
 if __name__ == "__main__":
